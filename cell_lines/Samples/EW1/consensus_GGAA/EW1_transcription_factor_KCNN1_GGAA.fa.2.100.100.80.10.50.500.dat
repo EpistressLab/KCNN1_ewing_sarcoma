@@ -1,0 +1,17 @@
+Tandem Repeats Finder Program written by:
+
+Gary Benson
+Program in Bioinformatics
+Boston University
+Version 4.09
+
+
+Sequence: chr19:17966004-17966103
+
+
+
+Parameters: 2 100 100 80 10 50 500
+
+
+1 27 4 6.8 4 100 0 54 0 51 22 25 1.48 CCTG CCTGCCTGCCTGCCTGCCTGCCTGCCT
+25 81 4 14.2 4 100 0 114 0 50 0 49 1.00 CCTT CCTTCCTTCCTTCCTTCCTTCCTTCCTTCCTTCCTTCCTTCCTTCCTTCCTTCCTTC
