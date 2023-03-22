@@ -1,0 +1,13 @@
+{
+	"n_targets": 177816,
+	"n_bootstraps": 100,
+	"n_processed": 88332563,
+	"n_pseudoaligned": 73228578,
+	"n_unique": 17885712,
+	"p_pseudoaligned": 82.9,
+	"p_unique": 20.2,
+	"kallisto_version": "0.46.2",
+	"index_version": 10,
+	"start_time": "Tue Jan 24 11:52:37 2023",
+	"call": "kallisto quant -i /LAB-DATA/BiRD/shares/Phy-OS/bone_epigenetics/anais/genomes/genome_index/kallisto/human_refseq_GCF_000001405.40/transcriptome.idx -o /SCRATCH-BIRD/shares/bone_epigenetics/rnaseq_ewing_kallisto/Samples/ASP14_day0_rep1/kallisto -b 100 /dev/fd/63 /dev/fd/62"
+}
