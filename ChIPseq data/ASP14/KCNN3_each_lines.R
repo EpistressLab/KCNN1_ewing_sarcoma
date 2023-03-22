@@ -8,22 +8,22 @@ library(cowplot)
 
 ##################### Functions ###############
 
-make_cov_plot <- function(data_cov,start,end){
+make_cov_plot <- function(data_cov,start,end,max_y){
   plot <- ggplot(data_cov, aes(x=position)) +
   theme_minimal() +
   theme(legend.position="none") %+replace% theme(
     axis.ticks.y = element_blank(),
     axis.title.y=element_text(size=7),
     axis.title.x=element_text(size=7)) +
-  xlim(start,end) +
-  xlab("Position on chr1") +
+  xlim(start,end) + 
+  ylim(0,max_y) +
+  xlab("Position on chr19") +
   geom_line(aes(y = reads_all), linewidth=0.5) +
   geom_area(aes(y = reads_all), linewidth=0.05,linetype = 0, fill="#bac5ff", alpha=0.5, outline.type="full")
   return(plot)
 }
 
 make_macs2_plot <- function(macs2_data,start,end,min_gradient,max_gradient){
-    #macs2_data <- read.table(macs2_file, h=F, sep="\t")
     plot_macs2 <- ggplot(macs2_data) +
         geom_rect(aes(xmin=V2,xmax=V3,ymin=0,ymax=1,fill=V9),alpha=0.7) +
         xlim(start,end) +
@@ -99,11 +99,13 @@ plot_annot <- ggplot(gtf_KCNN3,aes(xmin=start_transcript, xmax=end_transcript, y
 
 # H3K27ac
 ASP14_d0_H3K27ac_cov <- read.table("./Samples/ASP14_d0_H3K27ac/ASP14_d0_H3K27ac_KCNN3_coverage.tsv", h=T, sep="\t")
-plot_ASP14_d0_H3K27ac <- make_cov_plot(ASP14_d0_H3K27ac_cov,154685000,154880000) + ylab(bquote(atop(bold("Day 0"),"Depth coverage")))
 ASP14_d0_H3K27ac_macs2 <- subset(read.table("./Samples/ASP14_d0_H3K27ac/macs2/ASP14_d0_H3K27ac_peaks.narrowPeak", h=F, sep="\t"),V1=="chr1")
 ASP14_d7_H3K27ac_cov <- read.table("./Samples/ASP14_d7_H3K27ac/ASP14_d7_H3K27ac_KCNN3_coverage.tsv", h=T, sep="\t")
-plot_ASP14_d7_H3K27ac <- make_cov_plot(ASP14_d7_H3K27ac_cov,154685000,154880000) + ylab(bquote(atop(bold("Day 7"),"Depth coverage")))
 ASP14_d7_H3K27ac_macs2 <- subset(read.table("./Samples/ASP14_d7_H3K27ac/macs2/ASP14_d7_H3K27ac_peaks.narrowPeak", h=F, sep="\t"),V1=="chr1")
+
+max_cov_plot <- max(c(ASP14_d0_H3K27ac_cov$reads_all,ASP14_d7_H3K27ac_cov$reads_all))
+plot_ASP14_d0_H3K27ac <- make_cov_plot(ASP14_d0_H3K27ac_cov,154685000,154880000,max_cov_plot) + ylab(bquote(atop(bold("Day 0"),"Depth coverage")))
+plot_ASP14_d7_H3K27ac <- make_cov_plot(ASP14_d7_H3K27ac_cov,154685000,154880000,max_cov_plot) + ylab(bquote(atop(bold("Day 7"),"Depth coverage")))
 
 all_peaks_H3K27ac <- rbind(ASP14_d0_H3K27ac_macs2,ASP14_d7_H3K27ac_macs2)
 all_peaks_H3K27ac <- subset(all_peaks_H3K27ac, V2>=154685000 & V3 <= 154880000)
@@ -123,20 +125,23 @@ dev.off()
 
 # FLI1
 ASP14_d7_FLI1_cov <- read.table("./Samples/ASP14_d7_FLI1/ASP14_d7_FLI1_KCNN3_coverage.tsv", h=T, sep="\t")
-plot_ASP14_d7_FLI1 <- make_cov_plot(ASP14_d7_FLI1_cov,154685000,154880000) + ylab(bquote(atop(bold("Day 7"),"Depth coverage")))
 ASP14_d7_FLI1_macs2 <- subset(read.table("./Samples/ASP14_d7_FLI1/macs2/ASP14_d7_FLI1_peaks.narrowPeak", h=F, sep="\t"),V1=="chr1")
 ASP14_d10_FLI1_cov <- read.table("./Samples/ASP14_d10_FLI1/ASP14_d10_FLI1_KCNN3_coverage.tsv", h=T, sep="\t")
-plot_ASP14_d10_FLI1 <- make_cov_plot(ASP14_d10_FLI1_cov,154685000,154880000) + ylab(bquote(atop(bold("Day 10"),"Depth coverage")))
 ASP14_d10_FLI1_macs2 <- subset(read.table("./Samples/ASP14_d10_FLI1/macs2/ASP14_d10_FLI1_peaks.narrowPeak", h=F, sep="\t"),V1=="chr1")
 ASP14_d11_FLI1_cov <- read.table("./Samples/ASP14_d11_FLI1/ASP14_d11_FLI1_KCNN3_coverage.tsv", h=T, sep="\t")
-plot_ASP14_d11_FLI1 <- make_cov_plot(ASP14_d11_FLI1_cov,154685000,154880000) + ylab(bquote(atop(bold("Day 11"),"Depth coverage")))
 ASP14_d11_FLI1_macs2 <- subset(read.table("./Samples/ASP14_d11_FLI1/macs2/ASP14_d11_FLI1_peaks.narrowPeak", h=F, sep="\t"),V1=="chr1")
 ASP14_d14_FLI1_cov <- read.table("./Samples/ASP14_d14_FLI1/ASP14_d14_FLI1_KCNN3_coverage.tsv", h=T, sep="\t")
-plot_ASP14_d14_FLI1 <- make_cov_plot(ASP14_d14_FLI1_cov,154685000,154880000) + ylab(bquote(atop(bold("Day 14"),"Depth coverage")))
 ASP14_d14_FLI1_macs2 <- subset(read.table("./Samples/ASP14_d14_FLI1/macs2/ASP14_d14_FLI1_peaks.narrowPeak", h=F, sep="\t"),V1=="chr1")
 ASP14_d17_FLI1_cov <- read.table("./Samples/ASP14_d17_FLI1/ASP14_d17_FLI1_KCNN3_coverage.tsv", h=T, sep="\t")
-plot_ASP14_d17_FLI1 <- make_cov_plot(ASP14_d17_FLI1_cov,154685000,154880000) + ylab(bquote(atop(bold("Day 17"),"Depth coverage")))
 ASP14_d17_FLI1_macs2 <- subset(read.table("./Samples/ASP14_d17_FLI1/macs2/ASP14_d17_FLI1_peaks.narrowPeak", h=F, sep="\t"),V1=="chr1")
+
+max_cov_plot <- max(c(ASP14_d7_FLI1_cov$reads_all,ASP14_d10_FLI1_cov$reads_all,ASP14_d11_FLI1_cov$reads_all,ASP14_d14_FLI1_cov$reads_all,ASP14_d17_FLI1_cov$reads_all))
+plot_ASP14_d7_FLI1 <- make_cov_plot(ASP14_d7_FLI1_cov,154685000,154880000,max_cov_plot) + ylab(bquote(atop(bold("Day 7"),"Depth coverage")))
+plot_ASP14_d10_FLI1 <- make_cov_plot(ASP14_d10_FLI1_cov,154685000,154880000,max_cov_plot) + ylab(bquote(atop(bold("Day 10"),"Depth coverage")))
+plot_ASP14_d11_FLI1 <- make_cov_plot(ASP14_d11_FLI1_cov,154685000,154880000,max_cov_plot) + ylab(bquote(atop(bold("Day 11"),"Depth coverage")))
+plot_ASP14_d14_FLI1 <- make_cov_plot(ASP14_d14_FLI1_cov,154685000,154880000,max_cov_plot) + ylab(bquote(atop(bold("Day 14"),"Depth coverage")))
+plot_ASP14_d17_FLI1 <- make_cov_plot(ASP14_d17_FLI1_cov,154685000,154880000,max_cov_plot) + ylab(bquote(atop(bold("Day 17"),"Depth coverage")))
+
 
 all_peaks_FLI1 <- rbind(rbind(rbind(rbind(ASP14_d7_FLI1_macs2,ASP14_d10_FLI1_macs2),ASP14_d11_FLI1_macs2),ASP14_d14_FLI1_macs2),ASP14_d17_FLI1_macs2)
 all_peaks_FLI1 <- subset(all_peaks_FLI1, V2>=154685000 & V3 <= 154880000)

@@ -252,7 +252,7 @@ for (cell in cells){
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,
                 plot_transcription_factor_cov,plot_macs2_transcription_factor,
-                plot_annot, align = "v", axis="tb", ncol=1, nrow=5, rel_heights = c(0.05,rep(c(0.25, 0.075),2),0.3)),
+                plot_annot, align = "v", axis="tb", ncol=1, nrow=6, rel_heights = c(0.05,rep(c(0.25, 0.075),2),0.3)),
             ggdraw(),legend_macs2, ncol=3, rel_widths=c(0.85,0.05,0.15)))
     dev.off()
 }

@@ -24,7 +24,6 @@ make_cov_plot <- function(data_cov,start,end,max_y){
 }
 
 make_macs2_plot <- function(macs2_data,start,end,min_gradient,max_gradient){
-    #macs2_data <- read.table(macs2_file, h=F, sep="\t")
     plot_macs2 <- ggplot(macs2_data) +
         geom_rect(aes(xmin=V2,xmax=V3,ymin=0,ymax=1,fill=V9),alpha=0.7) +
         xlim(start,end) +
@@ -63,7 +62,6 @@ make_macs2_legend <- function(macs2_data,start,end,min_gradient,max_gradient){
 ###################### H3K4me3 KCNN1 plots ############
 
 ####### GTF file
-#gtf <- read.table("/LAB-DATA/BiRD/shares/Phy-OS/bone_epigenetics/anais/genomes/hg38/hg38_refseq_with_symbols_and_transcripts.gtf", sep="\t", h=F)
 gtf <- read.table("~/bird/bone_epigenetics/anais/genomes/hg38/GCF_000001405.40_GRCh38.p14_genomic.gtf", sep="\t", h=F)
 gtf <- gtf %>% separate('V9',into=c('a','b','c','d','e','f','g','h','i'),sep="; ",remove=T) %>% separate('a',into=c("gene_id","gene"),sep=" ") %>% separate('b',into=c("transcript_id","transcript"),sep=" ")
 gtf <- gtf[,-c(2,9,11,13:19)]
@@ -79,14 +77,16 @@ gtf_KCNN1 <- merge(gtf_KCNN1,gtf_KCNN1_transcripts)
 gtf_KCNN1$orientation <- 1
 gtf_KCNN1$orientation[which(gtf_KCNN1$V7 == '-')] <- 0
 gtf_KCNN1$transcript <- factor(gtf_KCNN1$transcript, levels = c("XM_011528004.2","NR_170374.1","NR_170373.1","NM_001386974.1","NM_001386975.1","NM_001386977.1","NM_001386976.1","NM_002248.5"))
-
+transcripts_nicknames <- data.frame('transcript'=c("XM_011528004.2","NR_170374.1","NR_170373.1","NM_001386974.1","NM_001386975.1","NM_001386977.1","NM_001386976.1","NM_002248.5"),'nickname'=c('H','G','F','E','D','C','B','A'))
+gtf_KCNN1 <- merge(gtf_KCNN1,transcripts_nicknames)
+gtf_KCNN1$nickname <- factor(gtf_KCNN1$nickname, levels=c('H','G','F','E','D','C','B','A'))
 
 plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=transcript, forward = orientation)) +
     geom_gene_arrow(fill="white") +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="exon"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=0.6, fill='coral1') +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="CDS"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=1, fill='coral4') +
     theme_genes() +
-    geom_gene_label(aes(label = transcript)) +
+    geom_gene_label(aes(label = nickname)) +
     theme(legend.position="none") %+replace% theme(
         axis.ticks.y = element_blank(),
         axis.text.y=element_blank(),
@@ -98,7 +98,7 @@ plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y
 
 ######## Coverage plots
 
-GGAA_coords <- data.frame('start'=c(17965930),'end'=c(17966136))
+GGAA_coords <- data.frame('start'=c(17966024),'end'=c(17966083))
 
 # H3K27ac
 ASP14_d0_H3K27ac_cov <- read.table("./Samples/ASP14_d0_H3K27ac/ASP14_d0_H3K27ac_KCNN1_coverage.tsv", h=T, sep="\t")
