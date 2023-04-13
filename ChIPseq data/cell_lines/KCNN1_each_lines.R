@@ -63,7 +63,6 @@ make_macs2_legend <- function(macs2_data,start,end,min_gradient,max_gradient){
 ###################### H3K4me3 KCNN1 plots ############
 
 ####### GTF file
-#gtf <- read.table("/LAB-DATA/BiRD/shares/Phy-OS/bone_epigenetics/anais/genomes/hg38/hg38_refseq_with_symbols_and_transcripts.gtf", sep="\t", h=F)
 gtf <- read.table("~/bird/bone_epigenetics/anais/genomes/hg38/GCF_000001405.40_GRCh38.p14_genomic.gtf", sep="\t", h=F)
 gtf <- gtf %>% separate('V9',into=c('a','b','c','d','e','f','g','h','i'),sep="; ",remove=T) %>% separate('a',into=c("gene_id","gene"),sep=" ") %>% separate('b',into=c("transcript_id","transcript"),sep=" ")
 gtf <- gtf[,-c(2,9,11,13:19)]
@@ -118,7 +117,8 @@ plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y
 ######## Coverage plots
 
 cells <- c('A673','CHLA10','CHLA25','EW1','EW3','EW7','EW22','EW24','MHHES1','MIC','POE','RDES','RH1','SKES1','SKNMC','TC32','TC71','TC106')
-GGAA_coords <- data.frame('start'=c(17966024),'end'=c(17966083))
+#GGAA_coords <- data.frame('start'=c(17966024),'end'=c(17966083))
+GGAA_coords <- data.frame('start'=c(17965974),'end'=c(17966133))
 
 for (cell in cells){
     ## Data reading
@@ -171,11 +171,12 @@ for (cell in cells){
     # Merging plots
     png(paste(c("plots/KCNN1_",cell,"_all_seq.png"),collapse=""), width = 20, height = 30, units = "cm", res = 300)
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
+                ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,
                 plot_H3K27ac_cov, plot_macs2_H3K27ac,
                 plot_H3K27me3_cov, plot_macs2_H3K27me3,
                 plot_transcription_factor_cov,plot_macs2_transcription_factor,
-                plot_annot, align = "v", axis="tb", ncol=1, nrow=10, rel_heights = c(0.04,rep(c(0.12, 0.07),4),0.2)),
+                plot_annot, align = "v", axis="tb", ncol=1, nrow=11, rel_heights = c(0.02,0.02,rep(c(0.12, 0.07),4),0.2)),
             ggdraw(),legend_macs2, ncol=3, rel_widths=c(0.85,0.05,0.15)))
     dev.off()
 
@@ -214,10 +215,11 @@ for (cell in cells){
     # Merging plots
     png(paste(c("plots/KCNN1_",cell,"_three_seq.png"),collapse=""), width = 20, height = 28, units = "cm", res = 300)
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
+                ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,
                 plot_H3K27ac_cov, plot_macs2_H3K27ac,
                 plot_transcription_factor_cov,plot_macs2_transcription_factor,
-                plot_annot, align = "v", axis="tb", ncol=1, nrow=8, rel_heights = c(0.06,rep(c(0.15, 0.08),3),0.25)),
+                plot_annot, align = "v", axis="tb", ncol=1, nrow=9, rel_heights = c(0.04,0.02,rep(c(0.15, 0.08),3),0.25)),
             ggdraw(),legend_macs2, ncol=3, rel_widths=c(0.85,0.05,0.15)))
     dev.off()
 
@@ -250,9 +252,10 @@ for (cell in cells){
     # Merging plots
     png(paste(c("plots/KCNN1_",cell,"_two_seq.png"),collapse=""), width = 20, height = 25, units = "cm", res = 300)
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
+                ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,
                 plot_transcription_factor_cov,plot_macs2_transcription_factor,
-                plot_annot, align = "v", axis="tb", ncol=1, nrow=6, rel_heights = c(0.05,rep(c(0.25, 0.075),2),0.3)),
+                plot_annot, align = "v", axis="tb", ncol=1, nrow=7, rel_heights = c(0.03,0.02,rep(c(0.25, 0.075),2),0.3)),
             ggdraw(),legend_macs2, ncol=3, rel_widths=c(0.85,0.05,0.15)))
     dev.off()
 }

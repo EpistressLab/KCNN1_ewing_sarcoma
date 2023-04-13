@@ -98,7 +98,8 @@ plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y
 
 ######## Coverage plots
 
-GGAA_coords <- data.frame('start'=c(17966024),'end'=c(17966083))
+#GGAA_coords <- data.frame('start'=c(17966024),'end'=c(17966083))
+GGAA_coords <- data.frame('start'=c(17965974),'end'=c(17966133))
 
 # H3K27ac
 ASP14_d0_H3K27ac_cov <- read.table("./Samples/ASP14_d0_H3K27ac/ASP14_d0_H3K27ac_KCNN1_coverage.tsv", h=T, sep="\t")
@@ -129,9 +130,10 @@ plot_macs2_ASP14_d7_H3K27ac <- make_macs2_plot(ASP14_d7_H3K27ac_macs2,17940000,1
 
 png("plots/KCNN1_ASP14_H3K27ac.png", width = 20, height = 25, units = "cm", res = 300)
 plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="H3K27ac ChIP sequencing") + theme_void(),
+            ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             plot_ASP14_d0_H3K27ac,plot_macs2_ASP14_d0_H3K27ac,
             plot_ASP14_d7_H3K27ac,plot_macs2_ASP14_d7_H3K27ac,
-            plot_annot, align = "v", axis="tb", ncol=1, nrow=6, rel_heights = c(0.04,rep(c(0.23, 0.10),2),0.3)),
+            plot_annot, align = "v", axis="tb", ncol=1, nrow=7, rel_heights = c(0.02,0.02,rep(c(0.23, 0.10),2),0.3)),
         ggdraw(),legend_macs2_H3K27ac, ncol=3, rel_widths=c(0.85,0.05,0.15))
 dev.off()
 
@@ -190,11 +192,12 @@ plot_macs2_ASP14_d17_FLI1 <- make_macs2_plot(ASP14_d17_FLI1_macs2,17940000,18010
 
 png("plots/KCNN1_ASP14_FLI1.png", width = 20, height = 35, units = "cm", res = 300)
 plot_grid(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="FLI1 ChIP sequencing") + theme_void(),
+            ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             plot_ASP14_d7_FLI1,plot_macs2_ASP14_d7_FLI1,
             plot_ASP14_d10_FLI1,plot_macs2_ASP14_d10_FLI1,
             plot_ASP14_d11_FLI1,plot_macs2_ASP14_d11_FLI1,
             plot_ASP14_d14_FLI1,plot_macs2_ASP14_d14_FLI1,
             plot_ASP14_d17_FLI1,plot_macs2_ASP14_d17_FLI1,
-            plot_annot, align = "v", axis="tb", ncol=1, nrow=12, rel_heights = c(0.05,rep(c(0.18, 0.13),5),0.2)),
+            plot_annot, align = "v", axis="tb", ncol=1, nrow=13, rel_heights = c(0.03,0.02,rep(c(0.18, 0.13),5),0.2)),
         ggdraw(),legend_macs2_H3K27ac, ncol=3, rel_widths=c(0.85,0.05,0.15)))
 dev.off()

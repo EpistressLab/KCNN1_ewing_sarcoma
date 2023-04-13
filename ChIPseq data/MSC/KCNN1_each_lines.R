@@ -75,7 +75,8 @@ plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y
 
 ######## Coverage plots
 
-GGAA_coords <- data.frame('start'=c(17966024),'end'=c(17966083))
+#GGAA_coords <- data.frame('start'=c(17966024),'end'=c(17966083))
+GGAA_coords <- data.frame('start'=c(17965974),'end'=c(17966133))
 
 # plasmid control
 MSC_control_FLI1_data <- make_df_cov("./Samples/MSC1_control_FLI1/bedgraphs/MSC1_control_FLI1_hg38.bedGraph","chr19",17940000,18010200)
@@ -171,8 +172,9 @@ MSC_FLI1_H3K27ac <- make_cov_plot(MSC_FLI1_H3K27ac_data,17940000,18010200,"#f49b
 
 png("./plots/KCNN1_MSC1.png", width = 20, height = 35, units = "cm", res = 300)
 plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="MSC with plasmids") + theme_void(),
+            ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             MSC_control_FLI1 ,MSC_control_H3K27ac,
             MSC_FLI1_FLI1 ,MSC_FLI1_H3K27ac,
             MSC_EWSFLI1_FLI1 ,MSC_EWSFLI1_H3K27ac,
-            plot_annot, align = "v", axis="tb", ncol=1, nrow=8, rel_heights = c(0.06,rep(c(0.124, 0.124),3),0.25))
+            plot_annot, align = "v", axis="tb", ncol=1, nrow=9, rel_heights = c(0.04,0.02,rep(c(0.124, 0.124),3),0.25))
 dev.off()
