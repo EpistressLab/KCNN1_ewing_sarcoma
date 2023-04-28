@@ -13,8 +13,8 @@ make_cov_plot <- function(data_cov,start,end,max_y){
   theme_minimal() +
   theme(legend.position="none") %+replace% theme(
     axis.ticks.y = element_blank(),
-    axis.title.y=element_text(size=7),
-    axis.title.x=element_text(size=7)) +
+    axis.title.y=element_text(size=9),
+    axis.title.x=element_text(size=9)) +
   xlim(start,end) + 
   ylim(0,max_y) +
   xlab("Position on chr19") +
@@ -31,7 +31,7 @@ make_macs2_plot <- function(macs2_data,start,end,min_gradient,max_gradient){
         theme(legend.position="none") %+replace% theme(
             axis.ticks.y = element_blank(),
             axis.text.y=element_blank(),
-            axis.title.y=element_text(size=7),
+            axis.title.y=element_text(size=9),
             axis.line.x = element_blank(),
             axis.ticks.x = element_blank(),
             axis.text.x = element_blank(),
@@ -50,7 +50,7 @@ make_macs2_legend <- function(macs2_data,start,end,min_gradient,max_gradient){
         geom_rect(aes(xmin=V2,xmax=V3,ymin=0,ymax=1,fill=V9),alpha=0.7) +
         xlim(start,end) +
         theme_minimal() + 
-        theme(legend.title = element_text(hjust = 0.5, size=8)) +
+        theme(legend.title = element_text(hjust = 0.5, size=9)) +
         scale_fill_gradient(
             low = "#bac5ff",
             high = "#3b0e62",
@@ -81,20 +81,18 @@ transcripts_nicknames <- data.frame('transcript'=c("XM_011528004.2","NR_170374.1
 gtf_KCNN1 <- merge(gtf_KCNN1,transcripts_nicknames)
 gtf_KCNN1$nickname <- factor(gtf_KCNN1$nickname, levels=c('H','G','F','E','D','C','B','A'))
 
-plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=transcript, forward = orientation)) +
+plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=nickname, forward = orientation)) +
     geom_gene_arrow(fill="white") +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="exon"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=0.6, fill='coral1') +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="CDS"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=1, fill='coral4') +
     theme_genes() +
-    geom_gene_label(aes(label = nickname)) +
     theme(legend.position="none") %+replace% theme(
         axis.ticks.y = element_blank(),
-        axis.text.y=element_blank(),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.text.x = element_blank()) +
     xlim(17940000,18010200) +
-    ylab("KCNN1 transcripts")
+    ylab(expression(italic(KCNN1)~" transcripts"))
 
 ######## Coverage plots
 
@@ -110,10 +108,10 @@ ASP14_d7_H3K27ac_macs2 <- subset(read.table("./Samples/ASP14_d7_H3K27ac/macs2/AS
 max_cov_plot <- max(c(ASP14_d0_H3K27ac_cov$reads_all,ASP14_d7_H3K27ac_cov$reads_all))
 plot_ASP14_d0_H3K27ac <- make_cov_plot(ASP14_d0_H3K27ac_cov,17940000,18010200,max_cov_plot) + 
     ylab(bquote(atop(bold("Day 0"),"Depth coverage"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 plot_ASP14_d7_H3K27ac <- make_cov_plot(ASP14_d7_H3K27ac_cov,17940000,18010200,max_cov_plot) + 
     ylab(bquote(atop(bold("Day 7"),"Depth coverage"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 
 all_peaks_H3K27ac <- rbind(ASP14_d0_H3K27ac_macs2,ASP14_d7_H3K27ac_macs2)
 all_peaks_H3K27ac <- subset(all_peaks_H3K27ac, V2>=17940000 & V3 <= 18010200)
@@ -123,17 +121,17 @@ max_gradient <- ceiling(max(all_peaks_H3K27ac$V9))
 legend_macs2_H3K27ac <- make_macs2_legend(ASP14_d0_H3K27ac_macs2,17940000,18010200,min_gradient,max_gradient)
 plot_macs2_ASP14_d0_H3K27ac <- make_macs2_plot(ASP14_d0_H3K27ac_macs2,17940000,18010200,min_gradient,max_gradient) + 
     ylab(bquote(atop(bold("Day 0"),"Macs2"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 plot_macs2_ASP14_d7_H3K27ac <- make_macs2_plot(ASP14_d7_H3K27ac_macs2,17940000,18010200,min_gradient,max_gradient) + 
     ylab(bquote(atop(bold("Day 7"),"Macs2"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 
-png("plots/KCNN1_ASP14_H3K27ac.png", width = 20, height = 25, units = "cm", res = 300)
-plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="H3K27ac ChIP sequencing") + theme_void(),
+png("plots/KCNN1_ASP14_H3K27ac.png", width = 20, height = 21, units = "cm", res = 300)
+plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="ASP14 H3K27ac ChIP sequencing") + theme_void(),
             ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             plot_ASP14_d0_H3K27ac,plot_macs2_ASP14_d0_H3K27ac,
             plot_ASP14_d7_H3K27ac,plot_macs2_ASP14_d7_H3K27ac,
-            plot_annot, align = "v", axis="tb", ncol=1, nrow=7, rel_heights = c(0.02,0.02,rep(c(0.23, 0.10),2),0.3)),
+            plot_annot, align = "v", axis="tb", ncol=1, nrow=7, rel_heights = c(0.04,0.04,rep(c(0.25, 0.06),2),0.3)),
         ggdraw(),legend_macs2_H3K27ac, ncol=3, rel_widths=c(0.85,0.05,0.15))
 dev.off()
 
@@ -152,20 +150,20 @@ ASP14_d17_FLI1_macs2 <- subset(read.table("./Samples/ASP14_d17_FLI1/macs2/ASP14_
 max_cov_plot <- max(c(ASP14_d7_FLI1_cov$reads_all,ASP14_d10_FLI1_cov$reads_all,ASP14_d11_FLI1_cov$reads_all,ASP14_d14_FLI1_cov$reads_all,ASP14_d17_FLI1_cov$reads_all))
 
 plot_ASP14_d7_FLI1 <- make_cov_plot(ASP14_d7_FLI1_cov,17940000,18010200,max_cov_plot) + 
-    ylab(bquote(atop(bold("Day 7"),"FLI1\nDepth coverage"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    ylab(bquote(atop(bold("Day 7"),"Depth coverage"))) +
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 plot_ASP14_d10_FLI1 <- make_cov_plot(ASP14_d10_FLI1_cov,17940000,18010200,max_cov_plot) + 
-    ylab(bquote(atop(bold("Day 7 + 3"),"FLI1\nDepth coverage"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    ylab(bquote(atop(bold("Day 7 + 3"),"Depth coverage"))) +
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 plot_ASP14_d11_FLI1 <- make_cov_plot(ASP14_d11_FLI1_cov,17940000,18010200,max_cov_plot) + 
-    ylab(bquote(atop(bold("Day 7 + 4"),"FLI1\nDepth coverage"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    ylab(bquote(atop(bold("Day 7 + 4"),"Depth coverage"))) +
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 plot_ASP14_d14_FLI1 <- make_cov_plot(ASP14_d14_FLI1_cov,17940000,18010200,max_cov_plot) + 
-    ylab(bquote(atop(bold("Day 7 + 6"),"FLI1\nDepth coverage"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    ylab(bquote(atop(bold("Day 7 + 7"),"Depth coverage"))) +
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 plot_ASP14_d17_FLI1 <- make_cov_plot(ASP14_d17_FLI1_cov,17940000,18010200,max_cov_plot) + 
-    ylab(bquote(atop(bold("Day 7 + 10"),"FLI1\nDepth coverage"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    ylab(bquote(atop(bold("Day 7 + 10"),"Depth coverage"))) +
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 
 
 all_peaks_FLI1 <- rbind(rbind(rbind(rbind(ASP14_d7_FLI1_macs2,ASP14_d10_FLI1_macs2),ASP14_d11_FLI1_macs2),ASP14_d14_FLI1_macs2),ASP14_d17_FLI1_macs2)
@@ -176,28 +174,28 @@ max_gradient <- ceiling(max(all_peaks_FLI1$V9))
 legend_macs2_FLI1 <- make_macs2_legend(ASP14_d7_FLI1_macs2,17940000,18010200,min_gradient,max_gradient)
 plot_macs2_ASP14_d7_FLI1 <- make_macs2_plot(ASP14_d7_FLI1_macs2,17940000,18010200,min_gradient,max_gradient) + 
     ylab(bquote(atop(bold("Day 7"),"Macs2"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 plot_macs2_ASP14_d10_FLI1 <- make_macs2_plot(ASP14_d10_FLI1_macs2,17940000,18010200,min_gradient,max_gradient) + 
     ylab(bquote(atop(bold("Day 7 + 3"),"Macs2"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 plot_macs2_ASP14_d11_FLI1 <- make_macs2_plot(ASP14_d11_FLI1_macs2,17940000,18010200,min_gradient,max_gradient) + 
     ylab(bquote(atop(bold("Day 7 + 4"),"Macs2"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 plot_macs2_ASP14_d14_FLI1 <- make_macs2_plot(ASP14_d14_FLI1_macs2,17940000,18010200,min_gradient,max_gradient) + 
-    ylab(bquote(atop(bold("Day 7 + 6"),"Macs2"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    ylab(bquote(atop(bold("Day 7 + 7"),"Macs2"))) +
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 plot_macs2_ASP14_d17_FLI1 <- make_macs2_plot(ASP14_d17_FLI1_macs2,17940000,18010200,min_gradient,max_gradient) + 
     ylab(bquote(atop(bold("Day 7 + 10"),"Macs2"))) +
-    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+    geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 
-png("plots/KCNN1_ASP14_FLI1.png", width = 20, height = 35, units = "cm", res = 300)
-plot_grid(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="FLI1 ChIP sequencing") + theme_void(),
+png("plots/KCNN1_ASP14_FLI1.png", width = 20, height = 28, units = "cm", res = 300)
+plot_grid(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="ASP14 FLI1 ChIP sequencing") + theme_void(),
             ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             plot_ASP14_d7_FLI1,plot_macs2_ASP14_d7_FLI1,
             plot_ASP14_d10_FLI1,plot_macs2_ASP14_d10_FLI1,
             plot_ASP14_d11_FLI1,plot_macs2_ASP14_d11_FLI1,
             plot_ASP14_d14_FLI1,plot_macs2_ASP14_d14_FLI1,
             plot_ASP14_d17_FLI1,plot_macs2_ASP14_d17_FLI1,
-            plot_annot, align = "v", axis="tb", ncol=1, nrow=13, rel_heights = c(0.03,0.02,rep(c(0.18, 0.13),5),0.2)),
+            plot_annot, align = "v", axis="tb", ncol=1, nrow=13, rel_heights = c(0.04,0.03,rep(c(0.20, 0.09),5),0.28)),
         ggdraw(),legend_macs2_H3K27ac, ncol=3, rel_widths=c(0.85,0.05,0.15)))
 dev.off()

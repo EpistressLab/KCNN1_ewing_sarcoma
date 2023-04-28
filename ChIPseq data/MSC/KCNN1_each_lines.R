@@ -25,8 +25,8 @@ make_cov_plot <- function(data_cov,start,end,color_fill,ymax){
   theme_minimal() +
   theme(legend.position="none") %+replace% theme(
     axis.ticks.y = element_blank(),
-    axis.title.y=element_text(size=7),
-    axis.title.x=element_text(size=7)) +
+    axis.title.y=element_text(size=9),
+    axis.title.x=element_text(size=9)) +
   xlim(start,end) +
   ylim(0,ymax) +
   xlab("Position on chr19") +
@@ -58,20 +58,18 @@ transcripts_nicknames <- data.frame('transcript'=c("XM_011528004.2","NR_170374.1
 gtf_KCNN1 <- merge(gtf_KCNN1,transcripts_nicknames)
 gtf_KCNN1$nickname <- factor(gtf_KCNN1$nickname, levels=c('H','G','F','E','D','C','B','A'))
 
-plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=transcript, forward = orientation)) +
+plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=nickname, forward = orientation)) +
     geom_gene_arrow(fill="white") +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="exon"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=0.6, fill='coral1') +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="CDS"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=1, fill='coral4') +
     theme_genes() +
-    geom_gene_label(aes(label = nickname)) +
     theme(legend.position="none") %+replace% theme(
         axis.ticks.y = element_blank(),
-        axis.text.y=element_blank(),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.text.x = element_blank()) +
     xlim(17940000,18010200) +
-    ylab("KCNN1 transcripts")
+    ylab(expression(italic(KCNN1)~" transcripts"))
 
 ######## Coverage plots
 
@@ -81,97 +79,40 @@ GGAA_coords <- data.frame('start'=c(17965974),'end'=c(17966133))
 # plasmid control
 MSC_control_FLI1_data <- make_df_cov("./Samples/MSC1_control_FLI1/bedgraphs/MSC1_control_FLI1_hg38.bedGraph","chr19",17940000,18010200)
 MSC_control_H3K27ac_data <- make_df_cov("./Samples/MSC1_control_H3K27ac/bedgraphs/MSC1_control_H3K27ac_hg38.bedGraph","chr19",17940000,18010200)
-MSC_control_input_data <- make_df_cov("./Samples/MSC1_control_input/bedgraphs/MSC1_control_input_hg38.bedGraph","chr19",17940000,18010200)
-
-max_cov_plot <- max(c(MSC_control_FLI1_data$reads_all,MSC_control_H3K27ac_data$reads_all,MSC_control_input_data$reads_all),na.rm=T)
-
-MSC_control_FLI1 <- make_cov_plot(MSC_control_FLI1_data,17940000,18010200,"#85d1e4",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid control"),"FLI1"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-MSC_control_H3K27ac <- make_cov_plot(MSC_control_H3K27ac_data,17940000,18010200,"#85d1e4",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid control"),"H3K27ac"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-MSC_control_input <- make_cov_plot(MSC_control_input_data,17940000,18010200,"#85d1e4",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid control"),"Input"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-
-
-plot_control <- plot_grid(MSC_control_FLI1 ,MSC_control_H3K27ac,MSC_control_input, align = "v", axis="tb", ncol=1, nrow=3, rel_heights = c(0.33,0.33,0.33))
-png("./plots/KCNN1_MSC1_plasmControl.png", width = 20, height = 35, units = "cm", res = 300)
-plot_control
-dev.off()
 
 # plasmid EWSFLI1
 MSC_EWSFLI1_FLI1_data <- make_df_cov("./Samples/MSC1_EWSFLI1_FLI1/bedgraphs/MSC1_EWSFLI1_FLI1_hg38.bedGraph","chr19",17940000,18010200)
 MSC_EWSFLI1_H3K27ac_data <- make_df_cov("./Samples/MSC1_EWSFLI1_H3K27ac/bedgraphs/MSC1_EWSFLI1_H3K27ac_hg38.bedGraph","chr19",17940000,18010200)
-MSC_EWSFLI1_input_data <- make_df_cov("./Samples/MSC1_EWSFLI1_input/bedgraphs/MSC1_EWSFLI1_input_hg38.bedGraph","chr19",17940000,18010200)
-
-max_cov_plot <- max(c(MSC_EWSFLI1_FLI1_data$reads_all,MSC_EWSFLI1_H3K27ac_data$reads_all,MSC_EWSFLI1_input_data$reads_all),na.rm=T)
-
-MSC_EWSFLI1_FLI1 <- make_cov_plot(MSC_EWSFLI1_FLI1_data,17940000,18010200,"#ec93a6",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid EWSFLI1"),"FLI1"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-MSC_EWSFLI1_H3K27ac <- make_cov_plot(MSC_EWSFLI1_H3K27ac_data,17940000,18010200,"#ec93a6",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid EWSFLI1"),"H3K27ac"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-MSC_EWSFLI1_input <- make_cov_plot(MSC_EWSFLI1_input_data,17940000,18010200,"#ec93a6",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid EWSFLI1"),"Input"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-
-plot_EWSFLI1 <- plot_grid(MSC_EWSFLI1_FLI1 ,MSC_EWSFLI1_H3K27ac,MSC_EWSFLI1_input, align = "v", axis="tb", ncol=1, nrow=3, rel_heights = c(0.33,0.33,0.33))
-png("./plots/KCNN1_MSC1_plasmEWSFLI1.png", width = 20, height = 35, units = "cm", res = 300)
-plot_EWSFLI1
-dev.off()
 
 
 # plasmid FLI1
 MSC_FLI1_FLI1_data <- make_df_cov("./Samples/MSC1_FLI1_FLI1/bedgraphs/MSC1_FLI1_FLI1_hg38.bedGraph","chr19",17940000,18010200)
 MSC_FLI1_H3K27ac_data <- make_df_cov("./Samples/MSC1_FLI1_H3K27ac/bedgraphs/MSC1_FLI1_H3K27ac_hg38.bedGraph","chr19",17940000,18010200)
-MSC_FLI1_input_data <- make_df_cov("./Samples/MSC1_FLI1_input/bedgraphs/MSC1_FLI1_input_hg38.bedGraph","chr19",17940000,18010200)
-
-max_cov_plot <- max(c(MSC_FLI1_FLI1_data$reads_all,MSC_FLI1_H3K27ac_data$reads_all,MSC_FLI1_input_data$reads_all),na.rm=T)
-
-MSC_FLI1_FLI1 <- make_cov_plot(MSC_FLI1_FLI1_data,17940000,18010200,"#f49b70",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid FLI1"),"FLI1"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-MSC_FLI1_H3K27ac <- make_cov_plot(MSC_FLI1_H3K27ac_data,17940000,18010200,"#f49b70",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid FLI1"),"H3K27ac"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-MSC_FLI1_input <- make_cov_plot(MSC_FLI1_input_data,17940000,18010200,"#f49b70",max_cov_plot) + 
-  ylab(bquote(atop(bold("Plasmid FLI1"),"Input"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
-
-
-plot_FLI1 <- plot_grid(MSC_FLI1_FLI1 ,MSC_FLI1_H3K27ac,MSC_FLI1_input, align = "v", axis="tb", ncol=1, nrow=3, rel_heights = c(0.33,0.33,0.33))
-png("./plots/KCNN1_MSC1_plasmFLI1.png", width = 20, height = 35, units = "cm", res = 300)
-plot_FLI1
-dev.off()
-
 
 # All plasmids 
 max_cov_plot <- max(c(MSC_control_FLI1_data$reads_all,MSC_control_H3K27ac_data$reads_all,MSC_EWSFLI1_FLI1_data$reads_all,MSC_EWSFLI1_H3K27ac_data$reads_all,MSC_EWSFLI1_FLI1_data$reads_all,MSC_EWSFLI1_H3K27ac_data$reads_all),na.rm=T)
 
 MSC_control_FLI1 <- make_cov_plot(MSC_control_FLI1_data,17940000,18010200,"#85d1e4",max_cov_plot) + 
   ylab(bquote(atop(bold("Plasmid control"),"FLI1"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 MSC_control_H3K27ac <- make_cov_plot(MSC_control_H3K27ac_data,17940000,18010200,"#85d1e4",max_cov_plot) + 
   ylab(bquote(atop(bold("Plasmid control"),"H3K27ac"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 MSC_EWSFLI1_FLI1 <- make_cov_plot(MSC_EWSFLI1_FLI1_data,17940000,18010200,"#ec93a6",max_cov_plot) + 
   ylab(bquote(atop(bold("Plasmid EWSFLI1"),"FLI1"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 MSC_EWSFLI1_H3K27ac <- make_cov_plot(MSC_EWSFLI1_H3K27ac_data,17940000,18010200,"#ec93a6",max_cov_plot) + 
   ylab(bquote(atop(bold("Plasmid EWSFLI1"),"H3K27ac"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 MSC_FLI1_FLI1 <- make_cov_plot(MSC_FLI1_FLI1_data,17940000,18010200,"#f49b70",max_cov_plot) + 
   ylab(bquote(atop(bold("Plasmid FLI1"),"FLI1"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 MSC_FLI1_H3K27ac <- make_cov_plot(MSC_FLI1_H3K27ac_data,17940000,18010200,"#f49b70",max_cov_plot) + 
   ylab(bquote(atop(bold("Plasmid FLI1"),"H3K27ac"))) +
-  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+  geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 
-png("./plots/KCNN1_MSC1.png", width = 20, height = 35, units = "cm", res = 300)
-plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="MSC with plasmids") + theme_void(),
+png("./plots/KCNN1_MSC1.png", width = 20, height = 25, units = "cm", res = 300)
+plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="MSC with plasmids, ChIPseq H3K27ac and FLI1") + theme_void(),
             ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             MSC_control_FLI1 ,MSC_control_H3K27ac,
             MSC_FLI1_FLI1 ,MSC_FLI1_H3K27ac,

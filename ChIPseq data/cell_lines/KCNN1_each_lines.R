@@ -13,8 +13,8 @@ make_cov_plot <- function(data_cov,start,end,max_y){
   theme_minimal() +
   theme(legend.position="none") %+replace% theme(
     axis.ticks.y = element_blank(),
-    axis.title.y=element_text(size=7),
-    axis.title.x=element_text(size=7)) +
+    axis.title.y=element_text(size=9),
+    axis.title.x=element_text(size=9)) +
   xlim(start,end) + 
   ylim(0,max_y) +
   xlab("Position on chr19") +
@@ -32,7 +32,7 @@ make_macs2_plot <- function(macs2_data,start,end,min_gradient,max_gradient){
         theme(legend.position="none") %+replace% theme(
             axis.ticks.y = element_blank(),
             axis.text.y=element_blank(),
-            axis.title.y=element_text(size=7),
+            axis.title.y=element_text(size=9),
             axis.line.x = element_blank(),
             axis.ticks.x = element_blank(),
             axis.text.x = element_blank(),
@@ -51,7 +51,7 @@ make_macs2_legend <- function(macs2_data,start,end,min_gradient,max_gradient){
         geom_rect(aes(xmin=V2,xmax=V3,ymin=0,ymax=1,fill=V9),alpha=0.7) +
         xlim(start,end) +
         theme_minimal() + 
-        theme(legend.title = element_text(hjust = 0.5, size=8)) +
+        theme(legend.title = element_text(hjust = 0.5, size=9)) +
         scale_fill_gradient(
             low = "#bac5ff",
             high = "#3b0e62",
@@ -81,14 +81,15 @@ gtf_KCNN1$transcript <- factor(gtf_KCNN1$transcript, levels = c("XM_011528004.2"
 transcripts_nicknames <- data.frame('transcript'=c("XM_011528004.2","NR_170374.1","NR_170373.1","NM_001386974.1","NM_001386975.1","NM_001386977.1","NM_001386976.1","NM_002248.5"),'nickname'=c('H','G','F','E','D','C','B','A'))
 gtf_KCNN1 <- merge(gtf_KCNN1,transcripts_nicknames)
 gtf_KCNN1$nickname <- factor(gtf_KCNN1$nickname, levels=c('H','G','F','E','D','C','B','A'))
+gtf_KCNN1$nickname_2 <- paste(gtf_KCNN1$nickname,gtf_KCNN1$transcript,sep=" : ")
+gtf_KCNN1$nickname_2 <- factor(gtf_KCNN1$nickname_2, levels=c("H : XM_011528004.2","G : NR_170374.1","F : NR_170373.1","E : NM_001386974.1","D : NM_001386975.1","C : NM_001386977.1","B : NM_001386976.1","A : NM_002248.5"))
 
-png("KCNN1_transcripts.png", width = 20, height = 12, units = "cm", res = 300)
-ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=nickname, forward = orientation)) +
+png("KCNN1_transcripts.png", width = 14, height = 8, units = "cm", res = 300)
+ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=reorder(nickname_2,nickname), forward = orientation)) +
     geom_gene_arrow(fill="white") +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="exon"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=0.6, fill='coral1') +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="CDS"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=1, fill='coral4') +
     theme_genes() +
-    geom_gene_label(aes(label = transcript)) +
     theme(legend.position="none") %+replace% theme(
         axis.ticks.y = element_blank(),
         axis.line.x = element_blank(),
@@ -96,23 +97,21 @@ ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=nickname, for
         axis.text.x = element_blank(),
         axis.title.y = element_blank()) +
     xlim(17940000,18010200) +
-    xlab("KCNN1 transcripts")
+    xlab(expression(italic(KCNN1)~" transcripts"))
 dev.off()
 
-plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=transcript, forward = orientation)) +
+plot_annot <- ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=nickname, forward = orientation)) +
     geom_gene_arrow(fill="white") +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="exon"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=0.6, fill='coral1') +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="CDS"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=1, fill='coral4') +
     theme_genes() +
-    geom_gene_label(aes(label = nickname)) +
     theme(legend.position="none") %+replace% theme(
         axis.ticks.y = element_blank(),
-        axis.text.y=element_blank(),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
         axis.text.x = element_blank()) +
     xlim(17940000,18010200) +
-    ylab("KCNN1 transcripts")
+    ylab(expression(italic(KCNN1)~" transcripts"))
 
 ######## Coverage plots
 
@@ -136,15 +135,15 @@ for (cell in cells){
     max_cov_plot <- max(c(H3K4me3_cov$reads_all,H3K27ac_cov$reads_all,H3K27me3_cov$reads_all,transcription_factor_cov$reads_all))
     plot_H3K4me3_cov <- make_cov_plot(H3K4me3_cov,17940000,18010200,max_cov_plot) + 
         ylab(bquote(atop(bold("H3K4me3"),"Depth coverage"))) +
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     plot_H3K27ac_cov <- make_cov_plot(H3K27ac_cov,17940000,18010200,max_cov_plot) + 
         ylab(bquote(atop(bold("H3K27ac"),"Depth coverage")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     plot_H3K27me3_cov <- make_cov_plot(H3K27me3_cov,17940000,18010200,max_cov_plot) + 
         ylab(bquote(atop(bold("H3K27me3"),"Depth coverage")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     plot_transcription_factor_cov <- make_cov_plot(transcription_factor_cov,17940000,18010200,max_cov_plot)+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     if (cell %in% c('CHLA25','EW3','TC106')){plot_transcription_factor_cov <- plot_transcription_factor_cov + ylab(bquote(atop(bold("ERG"),"Depth coverage")))}
     else {plot_transcription_factor_cov <- plot_transcription_factor_cov + ylab(bquote(atop(bold("FLI1"),"Depth coverage")))}
 
@@ -156,15 +155,15 @@ for (cell in cells){
     legend_macs2 <- make_macs2_legend(H3K4me3_macs2,17940000,18010200,min_gradient,max_gradient)
     plot_macs2_H3K4me3 <- make_macs2_plot(H3K4me3_macs2,17940000,18010200,min_gradient,max_gradient) + 
         ylab(bquote(atop(bold("H3K4me3"),"Macs2")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     plot_macs2_H3K27ac <- make_macs2_plot(H3K27ac_macs2,17940000,18010200,min_gradient,max_gradient) + 
         ylab(bquote(atop(bold("H3K27ac"),"Macs2")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     plot_macs2_H3K27me3 <- make_macs2_plot(H3K27me3_macs2,17940000,18010200,min_gradient,max_gradient) + 
         ylab(bquote(atop(bold("H3K27me3"),"Macs2")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     plot_macs2_transcription_factor <- make_macs2_plot(transcription_factor_macs2,17940000,18010200,min_gradient,max_gradient)+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     if (cell %in% c('CHLA25','EW3','TC106')){plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("ERG"),"Macs2")))}
     else {plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("FLI1"),"Macs2")))}
 
@@ -185,14 +184,14 @@ for (cell in cells){
     max_cov_plot <- max(c(H3K4me3_cov$reads_all,H3K27ac_cov$reads_all,transcription_factor_cov$reads_all))
     plot_H3K4me3_cov <- make_cov_plot(H3K4me3_cov,17940000,18010200,max_cov_plot) + 
         ylab(bquote(atop(bold("H3K4me3"),"Depth coverage"))) +
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     plot_H3K27ac_cov <- make_cov_plot(H3K27ac_cov,17940000,18010200,max_cov_plot) + 
         ylab(bquote(atop(bold("H3K27ac"),"Depth coverage")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     plot_transcription_factor_cov <- make_cov_plot(transcription_factor_cov,17940000,18010200,max_cov_plot)+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     if (cell %in% c('CHLA25','EW3','TC106')){plot_transcription_factor_cov <- plot_transcription_factor_cov + ylab(bquote(atop(bold("ERG"),"Depth coverage")))}
-    else {plot_transcription_factor_cov <- plot_transcription_factor_cov + ylab(bquote(atop(bold("FLI1"),"Depth coverage")))}
+    if (!(cell %in% c('CHLA25','EW3','TC106'))){plot_transcription_factor_cov <- plot_transcription_factor_cov + ylab(bquote(atop(bold("FLI1"),"Depth coverage")))}
 
     # Macs2 plots
     all_peaks <- rbind(rbind(H3K4me3_macs2,transcription_factor_macs2),H3K27ac_macs2)
@@ -203,23 +202,23 @@ for (cell in cells){
     legend_macs2 <- make_macs2_legend(H3K4me3_macs2,17940000,18010200,min_gradient,max_gradient)
     plot_macs2_H3K4me3 <- make_macs2_plot(H3K4me3_macs2,17940000,18010200,min_gradient,max_gradient) + 
         ylab(bquote(atop(bold("H3K4me3"),"Macs2")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     plot_macs2_H3K27ac <- make_macs2_plot(H3K27ac_macs2,17940000,18010200,min_gradient,max_gradient) + 
         ylab(bquote(atop(bold("H3K27ac"),"Macs2")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     plot_macs2_transcription_factor <- make_macs2_plot(transcription_factor_macs2,17940000,18010200,min_gradient,max_gradient)+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     if (cell %in% c('CHLA25','EW3','TC106')){plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("ERG"),"Macs2")))}
-    else {plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("FLI1"),"Macs2")))}
+    if (!(cell %in% c('CHLA25','EW3','TC106'))){plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("FLI1"),"Macs2")))}
 
     # Merging plots
-    png(paste(c("plots/KCNN1_",cell,"_three_seq.png"),collapse=""), width = 20, height = 28, units = "cm", res = 300)
+    png(paste(c("plots/KCNN1_",cell,"_three_seq.png"),collapse=""), width = 20, height = 21, units = "cm", res = 300)
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
                 ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,
                 plot_H3K27ac_cov, plot_macs2_H3K27ac,
                 plot_transcription_factor_cov,plot_macs2_transcription_factor,
-                plot_annot, align = "v", axis="tb", ncol=1, nrow=9, rel_heights = c(0.04,0.02,rep(c(0.15, 0.08),3),0.25)),
+                plot_annot, align = "v", axis="tb", ncol=1, nrow=9, rel_heights = c(0.04,0.02,rep(c(0.16, 0.05),3),0.31)),
             ggdraw(),legend_macs2, ncol=3, rel_widths=c(0.85,0.05,0.15)))
     dev.off()
 
@@ -228,9 +227,9 @@ for (cell in cells){
     max_cov_plot <- max(c(H3K4me3_cov$reads_all,H3K27ac_cov$reads_all,transcription_factor_cov$reads_all))
     plot_H3K4me3_cov <- make_cov_plot(H3K4me3_cov,17940000,18010200,max_cov_plot) + 
         ylab(bquote(atop(bold("H3K4me3"),"Depth coverage"))) +
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     plot_transcription_factor_cov <- make_cov_plot(transcription_factor_cov,17940000,18010200,max_cov_plot)+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
     if (cell %in% c('CHLA25','EW3','TC106')){plot_transcription_factor_cov <- plot_transcription_factor_cov + ylab(bquote(atop(bold("ERG"),"Depth coverage")))}
     else {plot_transcription_factor_cov <- plot_transcription_factor_cov + ylab(bquote(atop(bold("FLI1"),"Depth coverage")))}
 
@@ -243,9 +242,9 @@ for (cell in cells){
     legend_macs2 <- make_macs2_legend(H3K4me3_macs2,17940000,18010200,min_gradient,max_gradient)
     plot_macs2_H3K4me3 <- make_macs2_plot(H3K4me3_macs2,17940000,18010200,min_gradient,max_gradient) + 
         ylab(bquote(atop(bold("H3K4me3"),"Macs2")))+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     plot_macs2_transcription_factor <- make_macs2_plot(transcription_factor_macs2,17940000,18010200,min_gradient,max_gradient)+
-        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="#f2c025", alpha=0.5)
+        geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
     if (cell %in% c('CHLA25','EW3','TC106')){plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("ERG"),"Macs2")))}
     else {plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("FLI1"),"Macs2")))}
 
