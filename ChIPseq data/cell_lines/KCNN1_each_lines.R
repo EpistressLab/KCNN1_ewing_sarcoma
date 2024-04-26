@@ -84,7 +84,7 @@ gtf_KCNN1$nickname <- factor(gtf_KCNN1$nickname, levels=c('H','G','F','E','D','C
 gtf_KCNN1$nickname_2 <- paste(gtf_KCNN1$nickname,gtf_KCNN1$transcript,sep=" : ")
 gtf_KCNN1$nickname_2 <- factor(gtf_KCNN1$nickname_2, levels=c("H : XM_011528004.2","G : NR_170374.1","F : NR_170373.1","E : NM_001386974.1","D : NM_001386975.1","C : NM_001386977.1","B : NM_001386976.1","A : NM_002248.5"))
 
-png("KCNN1_transcripts.png", width = 14, height = 8, units = "cm", res = 300)
+pdf("KCNN1_transcripts.pdf", width = 5.3, height = 3.18)
 ggplot(gtf_KCNN1,aes(xmin=start_transcript, xmax=end_transcript, y=reorder(nickname_2,nickname), forward = orientation)) +
     geom_gene_arrow(fill="white") +
     geom_subgene_arrow(data=subset(gtf_KCNN1, V3=="exon"),aes(xsubmin=V4,xsubmax=V5,fill=gene),color="black", alpha=0.6, fill='coral1') +
@@ -168,7 +168,7 @@ for (cell in cells){
     else {plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("FLI1"),"Macs2")))}
 
     # Merging plots
-    png(paste(c("plots/KCNN1_",cell,"_all_seq.png"),collapse=""), width = 20, height = 30, units = "cm", res = 300)
+    pdf(paste(c("plots/KCNN1_",cell,"_all_seq.pdf"),collapse=""), width = 8, height = 12)
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
                 ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,
@@ -212,7 +212,7 @@ for (cell in cells){
     if (!(cell %in% c('CHLA25','EW3','TC106'))){plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("FLI1"),"Macs2")))}
 
     # Merging plots
-    png(paste(c("plots/KCNN1_",cell,"_three_seq.png"),collapse=""), width = 20, height = 21, units = "cm", res = 300)
+    pdf(paste(c("plots/KCNN1_",cell,"_three_seq.pdf"),collapse=""), width = 8, height = 8.5)
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
                 ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,
@@ -249,7 +249,7 @@ for (cell in cells){
     else {plot_macs2_transcription_factor <- plot_macs2_transcription_factor + ylab(bquote(atop(bold("FLI1"),"Macs2")))}
 
     # Merging plots
-    png(paste(c("plots/KCNN1_",cell,"_two_seq.png"),collapse=""), width = 20, height = 25, units = "cm", res = 300)
+    pdf(paste(c("plots/KCNN1_",cell,"_two_seq.pdf"),collapse=""), width = 8, height = 10)
     print(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label=cell) + theme_void(),
                 ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
                 plot_H3K4me3_cov,plot_macs2_H3K4me3,

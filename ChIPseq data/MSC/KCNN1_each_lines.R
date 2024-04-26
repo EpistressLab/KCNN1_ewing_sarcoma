@@ -111,7 +111,7 @@ MSC_FLI1_H3K27ac <- make_cov_plot(MSC_FLI1_H3K27ac_data,17940000,18010200,"#f49b
   ylab(bquote(atop(bold("Plasmid FLI1"),"H3K27ac"))) +
   geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=max_cov_plot),inherit.aes=F, fill="red", alpha=1)
 
-png("./plots/KCNN1_MSC1.png", width = 20, height = 25, units = "cm", res = 300)
+pdf("./plots/KCNN1_MSC1.pdf", width = 8, height = 10)
 plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="MSC with plasmids, ChIPseq H3K27ac and FLI1") + theme_void(),
             ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             MSC_control_FLI1 ,MSC_control_H3K27ac,

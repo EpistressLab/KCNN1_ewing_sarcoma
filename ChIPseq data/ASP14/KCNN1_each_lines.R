@@ -126,7 +126,7 @@ plot_macs2_ASP14_d7_H3K27ac <- make_macs2_plot(ASP14_d7_H3K27ac_macs2,17940000,1
     ylab(bquote(atop(bold("Day 7"),"Macs2"))) +
     geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 
-png("plots/KCNN1_ASP14_H3K27ac.png", width = 20, height = 21, units = "cm", res = 300)
+pdf("plots/KCNN1_ASP14_H3K27ac.pdf", width = 8, height = 8.4)
 plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="ASP14 H3K27ac ChIP sequencing") + theme_void(),
             ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             plot_ASP14_d0_H3K27ac,plot_macs2_ASP14_d0_H3K27ac,
@@ -188,7 +188,7 @@ plot_macs2_ASP14_d17_FLI1 <- make_macs2_plot(ASP14_d17_FLI1_macs2,17940000,18010
     ylab(bquote(atop(bold("Day 7 + 10"),"Macs2"))) +
     geom_rect(data=GGAA_coords, aes(xmin=start,xmax=end,ymin=0,ymax=1),inherit.aes=F, fill="red", alpha=1)
 
-png("plots/KCNN1_ASP14_FLI1.png", width = 20, height = 28, units = "cm", res = 300)
+pdf("plots/KCNN1_ASP14_FLI1.pdf", width = 8, height = 11.02)
 plot_grid(plot_grid(plot_grid(ggplot() + annotate("text", x = 1, y = 1, size=5, label="ASP14 FLI1 ChIP sequencing") + theme_void(),
             ggplot() + xlim(17940000,18010200) + annotate("text",x=max(GGAA_coords$start), y = 1, size=3, label="(GGAA)[n]",parse=TRUE) + theme_void(),
             plot_ASP14_d7_FLI1,plot_macs2_ASP14_d7_FLI1,
