@@ -5,6 +5,9 @@ library(tidyverse)
 
 ######### Get data #########
 
+palette <- c("#93b8fd","red")
+names(palette) <- c("FALSE","TRUE")
+
 exp <- read.table("GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct", sep="\t", h=T)
 samples <- read.table("GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt", sep="\t", h=T, quote="")[,c(1,7)]
 
@@ -28,11 +31,12 @@ colnames(data_exp_CCLE) <- c("SAMPID","log2TPM_KCNN1","SMTSD")
 data_exp <- rbind(exp[,c(1,3,4)],data_exp_CCLE[which(data_exp_CCLE$SMTSD == "Ewing Sarcoma"),])
 data_exp$is_ewing <- (data_exp$SMTSD == "Ewing Sarcoma")
 
-png("GTEx_boxplot_KCNN1_with_ewing.png",height=21,width=13,units="cm",res=300)
+pdf("GTEx_boxplot_KCNN1_with_ewing.pdf",height=10,width=5.7)
 ggplot(data_exp, aes(x=log2TPM_KCNN1, y=reorder(SMTSD,log2TPM_KCNN1,decreasing=F), fill=is_ewing)) +
     geom_boxplot() +
     xlab(expression(atop(italic(KCNN1)~" expression","log2(TPM+1)"))) +
     ylab("Tissue Site Detail field") +
+     scale_fill_manual(values=palette) +
     theme_minimal() +
     ggtitle("GTEx version 8 and\nEwing Sarcoma DepMap 22Q4") +
     theme(plot.title = element_text(hjust = 0.5)) +
